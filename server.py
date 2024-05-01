@@ -40,7 +40,6 @@ class WebSocketServer:
                     for client in self.clients:
                         if client != websocket:
                             await client.send_text(f"Echo: {response}")
-                            
             except WebSocketDisconnect:
                 self.clients.remove(websocket)
                 logging.info("Client disconnected")
