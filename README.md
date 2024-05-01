@@ -19,7 +19,7 @@ Para comenzar con este proyecto, clona este repositorio e instala los paquetes d
 git clone https://github.com/tuusuario/Centro-Comando-WebSocket.git
 cd Centro-Comando-WebSocket
 pip install -r requirements.txt
-
+```
 
 
 ## Uso
