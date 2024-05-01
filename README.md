@@ -16,8 +16,8 @@ Este proyecto es un Centro de Comando WebSocket basado en Python que permite la 
 Para comenzar con este proyecto, clona este repositorio e instala los paquetes de Python requeridos:
 
 ```bash
-git clone https://github.com/tuusuario/Centro-Comando-WebSocket.git
-cd Centro-Comando-WebSocket
+git clone https://github.com/RamNetSec/RAT_LINUX
+cd RAT_LINUX
 pip install -r requirements.txt
 ```
 

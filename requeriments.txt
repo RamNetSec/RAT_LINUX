@@ -1,0 +1,7 @@
+asyncio
+websockets
+subprocess
+logging
+fastapi
+uvicorn
+prompt_toolkit
