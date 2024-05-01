@@ -34,12 +34,15 @@ class WebSocketServer:
                 await self.manage_cli()
             try:
                 while True:
-                    response = await websocket.receive_text()
-                    logging.info(f"Received response: {response}")
-                    # Process the response or echo it back to clients
-                    for client in self.clients:
-                        if client is not websocket:
-                            await client.send_text(f"Echo: {response}")
+                    data = await websocket.receive_text()
+                    if data.startswith("Output:") or data.startswith("Error:"):
+                        logging.info(f"Received from client: {data}")
+                        print(f"Client response: {data}")  # Imprime la respuesta del cliente
+                    else:
+                        logging.info(f"Received command to send: {data}")
+                        for client in self.clients:
+                            await client.send_text(data)
+                            logging.info(f"Sent command to client: {data}")
             except WebSocketDisconnect:
                 self.clients.remove(websocket)
                 logging.info("Client disconnected")
