@@ -6,8 +6,8 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.styles import Style
 import logging
 
-# Configuración avanzada de logging para incluir saltos de línea
-logging.basicConfig(level=logging.INFO, format='\n%(asctime)s - %(levelname)s - %(message)s')
+# Configuración de logging para mostrar eventos claramente
+logging.basicConfig(level=logging.INFO, format='\n%(asctime)s - %(levelname)s - \n%(message)s')
 
 class WebSocketServer:
     def __init__(self, host='0.0.0.0', port=8000):
@@ -23,10 +23,10 @@ class WebSocketServer:
         )
 
         self.style = Style.from_dict({
-            'prompt': 'fg:ansibrightgreen bold',  # verde brillante y negrita para el prompt
-            'message': 'fg:ansicyan italic',      # cian y cursiva para los mensajes
-            'response': 'fg:ansiyellow',          # amarillo para las respuestas
-            'info': 'fg:ansiwhite bg:ansigrey',   # texto blanco sobre fondo gris para información
+            'prompt': 'fg:ansibrightgreen bold',    # Verde brillante y negrita para el prompt
+            'message': 'fg:ansicyan italic',        # Cian y cursiva para los mensajes
+            'response': 'fg:ansiyellow',            # Amarillo para las respuestas
+            'info': 'fg:ansiwhite bg:ansiblack',    # Texto blanco sobre fondo negro para información
         })
 
         self.cli_task = None  # Esta variable contendrá nuestra tarea CLI
@@ -36,7 +36,7 @@ class WebSocketServer:
         async def websocket_endpoint(websocket: WebSocket):
             await websocket.accept()
             self.clients.append(websocket)
-            logging.info("\nClient connected")
+            logging.info("Client connected\nINFO:     connection open")
 
             if len(self.clients) == 1:  # Si es el primer cliente, inicia el CLI
                 self.cli_task = asyncio.create_task(self.cli_input_loop())
@@ -44,15 +44,15 @@ class WebSocketServer:
             try:
                 while True:
                     data = await websocket.receive_text()
-                    logging.info("\nReceived data:\n" + data)
+                    logging.info(f"\nReceived data:\n{data}")
             except WebSocketDisconnect:
                 self.clients.remove(websocket)
-                logging.info("\nClient disconnected")
+                logging.info("Client disconnected")
                 
                 if not self.clients:  # Si es el último cliente, detiene el CLI
                     self.cli_task.cancel()
             except Exception as e:
-                logging.error("\nUnexpected error:\n" + str(e))
+                logging.error(f"\nUnexpected error:\n{str(e)}")
                 self.clients.remove(websocket)
                 
                 if not self.clients:
@@ -67,12 +67,12 @@ class WebSocketServer:
                     message = await session.prompt_async('Enter a command to send: ')
                     for client in self.clients:
                         await client.send_text(message)
-                        logging.info("\nSent message to client:\n" + message)
+                        logging.info(f"\nSent message to client:\n{message}")
                 except asyncio.CancelledError:
-                    logging.info("\nCLI loop cancelled")
+                    logging.info("CLI loop cancelled")
                     break
                 except Exception as e:
-                    logging.error("\nCLI Error:\n" + str(e))
+                    logging.error(f"\nCLI Error:\n{str(e)}")
 
 if __name__ == "__main__":
     server = WebSocketServer()
