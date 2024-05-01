@@ -6,7 +6,7 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.styles import Style
 import logging
 
-# Configuración de logging para mostrar eventos claramente
+# Configuración de logging con salto de línea antes de cada mensaje para claridad
 logging.basicConfig(level=logging.INFO, format='\n%(asctime)s - %(levelname)s - \n%(message)s')
 
 class WebSocketServer:
@@ -48,13 +48,11 @@ class WebSocketServer:
             except WebSocketDisconnect:
                 self.clients.remove(websocket)
                 logging.info("Client disconnected")
-                
                 if not self.clients:  # Si es el último cliente, detiene el CLI
                     self.cli_task.cancel()
             except Exception as e:
                 logging.error(f"\nUnexpected error:\n{str(e)}")
                 self.clients.remove(websocket)
-                
                 if not self.clients:
                     self.cli_task.cancel()
 
@@ -77,7 +75,6 @@ class WebSocketServer:
 if __name__ == "__main__":
     server = WebSocketServer()
     import uvicorn
-    
     config = uvicorn.Config(app=server.app, host="0.0.0.0", port=8000, lifespan="on")
     server_instance = uvicorn.Server(config)
     loop = asyncio.get_event_loop()
