@@ -33,7 +33,6 @@ class WebSocketClient:
             logging.info(f"Executing command: {command}")
             result = subprocess.run(["bash", "-c", command], capture_output=True, text=True)
             await self.send_response(websocket, result)
-                
     async def send_response(self, websocket, result):
         if result.stdout:
             await websocket.send(f"Output: {result.stdout}")
