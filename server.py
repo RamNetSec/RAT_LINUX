@@ -38,7 +38,7 @@ class WebSocketServer:
                     logging.info(f"Received response: {response}")
                     # Process the response or echo it back to clients
                     for client in self.clients:
-                        if client != websocket:
+                        if client is not websocket:
                             await client.send_text(f"Echo: {response}")
             except WebSocketDisconnect:
                 self.clients.remove(websocket)
